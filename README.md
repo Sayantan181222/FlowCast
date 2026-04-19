@@ -57,7 +57,7 @@ nyc-taxi-trip-duration/train.csv  (1.46M trips)
 │ Module 2a   │  │ Module 2b — Trip Duration Predictor  │
 │ Demand      │  │ GBM (200 trees, 13 features)         │
 │ Forecasting │  │ log1p(trip_duration) target          │
-│             │  │ → Kaggle submission.csv               │
+│             │  │ → Kaggle submission.csv              │
 │ ┌─────────┐ │  └─────────────────────────────────────┘
 │ │LightGBM │ │
 │ │+Lag 168h│ │  test.csv → predict → download CSV
@@ -77,8 +77,8 @@ nyc-taxi-trip-duration/train.csv  (1.46M trips)
 │ Module 3 — Routing │   │ Module 4 — Evaluation          │
 │ 67-node NYC graph  │   │ Metrics: MAE, RMSE, MAPE, R²   │
 │ Dijkstra / A*      │   │ LGBM vs Transformer comparison │
-│ Bellman-Ford       │   │ Per-horizon step analysis       │
-│ TSP 2-opt          │   │ Feature importance charts       │
+│ Bellman-Ford       │   │ Per-horizon step analysis      │
+│ TSP 2-opt          │   │ Feature importance charts      │
 └────────────────────┘   └────────────────────────────────┘
 ```
 
