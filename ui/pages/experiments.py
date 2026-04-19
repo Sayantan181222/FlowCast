@@ -75,7 +75,7 @@ def _render_experiment_runner():
         num_route_pairs = st.slider("Route Test Pairs", 5, 50, 20)
         run_routing = st.checkbox("Run Route Optimization Experiments", value=data_ready, disabled=not data_ready)
 
-    if st.button("🚀 Run Full Experiment Suite", use_container_width=True):
+    if st.button("🚀 Run Full Experiment Suite", width="stretch"):
         from module4_evaluation.experiment_runner import ExperimentRunner
         runner = ExperimentRunner()
 
@@ -209,16 +209,16 @@ def _render_forecast_results():
         fig = reporter.plot_predictions_vs_actual(
             predictions.flatten(), targets.flatten(), n_points=100
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Per-horizon metrics
     horizon_metrics = forecast_eval.get("horizon_metrics", [])
     if horizon_metrics:
         fig = reporter.plot_horizon_metrics(horizon_metrics)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         st.markdown("**Detailed Per-Horizon Metrics:**")
-        st.dataframe(pd.DataFrame(horizon_metrics), use_container_width=True)
+        st.dataframe(pd.DataFrame(horizon_metrics), width="stretch")
 
     # Training info
     if "training_epochs" in forecast_eval:
@@ -258,7 +258,7 @@ def _render_routing_results():
         reporter = ReportGenerator()
 
         fig = reporter.plot_routing_comparison(aggregated)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         # Detailed table
         st.markdown("**Aggregated Algorithm Performance:**")
@@ -267,14 +267,14 @@ def _render_routing_results():
             data_copy = data.copy()
             data_copy["Algorithm"] = algo
             agg_data.append(data_copy)
-        st.dataframe(pd.DataFrame(agg_data), use_container_width=True)
+        st.dataframe(pd.DataFrame(agg_data), width="stretch")
 
     # Individual test results
     individual = route_eval.get("individual_comparisons", [])
     if individual:
         st.markdown(f"**Individual Test Results** ({len(individual)} route evaluations):")
         with st.expander("View All Results"):
-            st.dataframe(pd.DataFrame(individual), use_container_width=True)
+            st.dataframe(pd.DataFrame(individual), width="stretch")
 
     num_tested = route_eval.get("num_pairs_tested", 0)
     st.markdown(f"""

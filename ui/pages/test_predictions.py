@@ -112,7 +112,7 @@ def _render_training_tab():
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("🚀 Train Model", use_container_width=True):
+    if st.button("🚀 Train Model", width="stretch"):
         _train_model(n_estimators, max_depth, sample_size)
 
 
@@ -174,7 +174,7 @@ def _train_model(n_estimators, max_depth, sample_size):
                  template="plotly_dark")
     fig.update_layout(height=400, yaxis=dict(autorange="reversed"),
                       coloraxis_showscale=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Prediction vs actual scatter (on validation set sample)
     st.markdown("**Predicted vs Actual Duration (Validation Sample)**")
@@ -202,7 +202,7 @@ def _train_model(n_estimators, max_depth, sample_size):
         yaxis_title="Predicted Duration (min)",
         template="plotly_dark", height=400,
     )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
 
 # ─────────────────────────────────────────────
@@ -250,7 +250,7 @@ def _render_prediction_tab():
         if bundled_exists:
             st.markdown("<br>", unsafe_allow_html=True)
             use_bundled = st.button("📦 Use Bundled test.csv (~625K records)",
-                                    use_container_width=True)
+                                    width="stretch")
         else:
             use_bundled = False
 
@@ -277,10 +277,10 @@ def _render_prediction_tab():
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("**Test Data Preview (first 10 rows):**")
-        st.dataframe(df_test.head(10), use_container_width=True)
+        st.dataframe(df_test.head(10), width="stretch")
 
         # Predict button
-        if st.button("🚀 Run Predictions", use_container_width=True):
+        if st.button("🚀 Run Predictions", width="stretch"):
             _run_predictions(df_test)
 
 
@@ -319,7 +319,7 @@ def _run_predictions(df_test):
 
     # Preview results table
     st.markdown("**Prediction Results (first 20 rows):**")
-    st.dataframe(submission.head(20), use_container_width=True)
+    st.dataframe(submission.head(20), width="stretch")
 
     # Download buttons
     col1, col2 = st.columns(2)
@@ -331,7 +331,7 @@ def _run_predictions(df_test):
             data=kaggle_csv,
             file_name="nyc_taxi_submission.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
     with col2:
         # Full results with minutes
@@ -341,7 +341,7 @@ def _run_predictions(df_test):
             data=full_csv,
             file_name="nyc_taxi_predictions_full.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
 
     # Duration histogram
@@ -352,7 +352,7 @@ def _run_predictions(df_test):
                        range_x=[0, 90])
     fig.update_layout(height=350, xaxis_title="Predicted Duration (min)",
                       yaxis_title="Number of Trips")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 
 # ─────────────────────────────────────────────
@@ -391,7 +391,7 @@ def _render_analysis_tab():
         fig.update_layout(height=350, xaxis_title="Hour of Day",
                           yaxis_title="Avg Duration (min)",
                           coloraxis_showscale=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with col2:
         # By day of week
@@ -408,7 +408,7 @@ def _render_analysis_tab():
         fig.update_layout(height=350, xaxis_title="Day",
                           yaxis_title="Avg Duration (min)",
                           coloraxis_showscale=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Pickup location scatter colored by duration
     if "pickup_latitude" in df.columns:
@@ -432,7 +432,7 @@ def _render_analysis_tab():
             yaxis=dict(title="Latitude", showgrid=False, scaleanchor="x"),
             template="plotly_dark", height=500,
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Passenger count vs duration
     if "passenger_count" in df.columns:
@@ -446,4 +446,4 @@ def _render_analysis_tab():
         fig.update_layout(height=320, xaxis_title="Passenger Count",
                           yaxis_title="Avg Duration (min)",
                           coloraxis_showscale=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")

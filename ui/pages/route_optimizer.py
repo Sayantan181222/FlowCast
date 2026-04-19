@@ -54,7 +54,7 @@ def render_route_optimizer():
             fig = visualizer.plot_demand_heatmap(demand_df)
         else:
             fig = visualizer.plot_network(color_by="degree")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     st.markdown("---")
 
@@ -130,7 +130,7 @@ def _render_single_route(zone_list, zone_options, optimizer, visualizer):
     weight = st.radio("Optimize for", ["distance", "duration"],
                       horizontal=True, key="sr_weight")
 
-    if st.button("🔍 Find Route", key="sr_find", use_container_width=True):
+    if st.button("🔍 Find Route", key="sr_find", width="stretch"):
         if source == target:
             st.error("Source and destination must be different!")
             return
@@ -155,7 +155,7 @@ def _render_single_route(zone_list, zone_options, optimizer, visualizer):
 
             # Route visualization
             fig = visualizer.plot_route(result, title=f"Route via {algorithm}")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
             # Route details
             with st.expander("📋 Route Details"):
@@ -163,7 +163,7 @@ def _render_single_route(zone_list, zone_options, optimizer, visualizer):
                 for i, (zone_id, name) in enumerate(zip(result.path, result.path_names)):
                     label = "🟢 Start" if i == 0 else ("🔴 End" if i == len(result.path) - 1 else f"▶ Step {i}")
                     route_data.append({"Step": label, "Zone": name, "Zone ID": zone_id})
-                st.dataframe(pd.DataFrame(route_data), use_container_width=True)
+                st.dataframe(pd.DataFrame(route_data), width="stretch")
         else:
             st.error(f"❌ {result.message}")
 
@@ -189,7 +189,7 @@ def _render_multi_stop(zone_list, zone_options, optimizer, visualizer):
 
     start_zone = st.selectbox("🟢 Starting Zone", selected, key="ms_start")
 
-    if st.button("🔍 Optimize Multi-Stop Route", key="ms_find", use_container_width=True):
+    if st.button("🔍 Optimize Multi-Stop Route", key="ms_find", width="stretch"):
         stops = [zone_options[s] for s in selected]
         start = zone_options[start_zone]
 
@@ -207,14 +207,14 @@ def _render_multi_stop(zone_list, zone_options, optimizer, visualizer):
             st.markdown("<br>", unsafe_allow_html=True)
 
             fig = visualizer.plot_route(result, title="Multi-Stop Optimized Route")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
             with st.expander("📋 Optimized Route Order"):
                 route_data = []
                 for i, (zone_id, name) in enumerate(zip(result.path, result.path_names)):
                     label = "🟢 Start" if i == 0 else ("🔴 End" if i == len(result.path) - 1 else f"▶ {i}")
                     route_data.append({"Step": label, "Zone": name, "Zone ID": zone_id})
-                st.dataframe(pd.DataFrame(route_data), use_container_width=True)
+                st.dataframe(pd.DataFrame(route_data), width="stretch")
         else:
             st.error(f"❌ {result.message}")
 
@@ -231,7 +231,7 @@ def _render_comparison(zone_list, zone_options, optimizer, visualizer, graph):
     source = zone_options[source_name]
     target = zone_options[target_name]
 
-    if st.button("⚡ Compare All Algorithms", key="cmp_run", use_container_width=True):
+    if st.button("⚡ Compare All Algorithms", key="cmp_run", width="stretch"):
         if source == target:
             st.error("Source and destination must be different!")
             return
@@ -256,11 +256,11 @@ def _render_comparison(zone_list, zone_options, optimizer, visualizer, graph):
                 })
 
         if comparison_data:
-            st.dataframe(pd.DataFrame(comparison_data), use_container_width=True)
+            st.dataframe(pd.DataFrame(comparison_data), width="stretch")
 
             # Comparison chart
             fig = visualizer.plot_algorithm_comparison(results)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
             # Show best route
             best_algo = min(
@@ -269,4 +269,4 @@ def _render_comparison(zone_list, zone_options, optimizer, visualizer, graph):
             )
             st.markdown(f"**🏆 Best Route: {best_algo[0]}**")
             fig = visualizer.plot_route(best_algo[1], title=f"Best Route — {best_algo[0]}")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")

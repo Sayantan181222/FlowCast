@@ -89,7 +89,7 @@ def _render_lgbm_tab():
         num_leaves = st.select_slider("Num Leaves", options=[31, 63, 127, 255], value=63,
                                       key="lgbm_leaves")
 
-    if st.button("⚡ Train LightGBM", use_container_width=True):
+    if st.button("⚡ Train LightGBM", width="stretch"):
         _run_lgbm_training(lookback, horizon, n_estimators, lr, num_leaves)
 
     st.markdown("---")
@@ -191,7 +191,7 @@ def _display_lgbm_results():
                 yaxis_title="Error (normalized)",
                 template="plotly_dark", height=350, barmode="group",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
             # Best iterations per step
             fig2 = go.Figure(go.Bar(
@@ -204,7 +204,7 @@ def _display_lgbm_results():
                 xaxis_title="Horizon Step", yaxis_title="Trees Used",
                 template="plotly_dark", height=300,
             )
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width="stretch")
 
     with r2:
         forecaster = st.session_state.get("lgbm_forecaster")
@@ -224,7 +224,7 @@ def _display_lgbm_results():
                          template="plotly_dark")
             fig.update_layout(height=500, yaxis=dict(autorange="reversed"),
                               coloraxis_showscale=False)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         else:
             st.info("Train the model to see feature importances.")
 
@@ -291,7 +291,7 @@ def _render_transformer_tab():
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("🚀 Train Transformer", use_container_width=True):
+    if st.button("🚀 Train Transformer", width="stretch"):
         _run_transformer_training(d_model, n_layers, n_heads, max_epochs, lr, batch_size, lookback, horizon)
 
     st.markdown("---")
@@ -362,7 +362,7 @@ def _run_transformer_training(d_model, n_layers, n_heads, max_epochs, lr, batch_
                           title="Training Progress (Live)",
                           xaxis_title="Epoch", yaxis_title="Loss",
                           margin=dict(l=20, r=20, t=40, b=20))
-        chart_placeholder.plotly_chart(fig, use_container_width=True)
+        chart_placeholder.plotly_chart(fig, width="stretch")
 
     history = trainer.train(
         loaders["train"], loaders["val"],
@@ -420,7 +420,7 @@ def _display_transformer_results(lookback, horizon):
         fig.update_layout(template="plotly_dark", height=350,
                           title="Transformer Training Curves",
                           xaxis_title="Epoch", yaxis_title="Loss")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with r2:
         if test_results and "predictions" in test_results:
@@ -484,7 +484,7 @@ def _render_comparison_tab():
             "Train Time": f"{len(trans_history.get('val_loss', []))} epochs" if trans_history else "–",
         })
 
-    st.dataframe(pd.DataFrame(rows).set_index("Model"), use_container_width=True)
+    st.dataframe(pd.DataFrame(rows).set_index("Model"), width="stretch")
 
     # ── Bar chart comparison ──────────────────────────────────────
     if lgbm_res and trans_res:
@@ -508,7 +508,7 @@ def _render_comparison_tab():
             template="plotly_dark", height=380, barmode="group",
             legend=dict(orientation="h", y=1.1),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         # ── Winner badge ─────────────────────────────────────────
         lgbm_wins = sum([
@@ -555,7 +555,7 @@ def _render_comparison_tab():
             template="plotly_dark", height=400,
             legend=dict(orientation="h", y=1.1),
         )
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
 
     elif lgbm_res or trans_res:
         st.info("💡 Train **both** models to unlock the full side-by-side comparison and prediction overlay.")
@@ -586,4 +586,4 @@ def _plot_predictions(preds: np.ndarray, targets: np.ndarray, title: str = ""):
         template="plotly_dark", height=380,
         legend=dict(orientation="h", y=1.1),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
