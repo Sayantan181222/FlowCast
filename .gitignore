@@ -1,0 +1,36 @@
+# ── Large data files (too big for GitHub) ─────────────────────
+nyc-taxi-trip-duration/
+data/nyc_taxi_raw.csv
+
+# ── Model checkpoints (binary, large) ─────────────────────────
+models/lgbm_demand_model.pkl
+models/trip_duration_model.pkl
+models/trip_duration_scaler.pkl
+
+# ── Python cache ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ───────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── OS / Editor ────────────────────────────────────────────────
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ── Jupyter ────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Logs / temp ────────────────────────────────────────────────
+*.log
+tmp/
+data/nyc_taxi_processed.csv

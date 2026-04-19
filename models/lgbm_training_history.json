@@ -1,0 +1,52 @@
+{
+  "model": "LightGBM",
+  "lookback": 24,
+  "forecast_horizon": 6,
+  "n_estimators": 500,
+  "learning_rate": 0.05,
+  "val_mae": 0.1905811402165691,
+  "val_rmse": 0.2598722378767642,
+  "val_r2": 0.9160797618050018,
+  "step_metrics": [
+    {
+      "horizon_step": 1,
+      "val_mae": 0.18039371615206326,
+      "val_rmse": 0.23943666665840393,
+      "best_iteration": 260
+    },
+    {
+      "horizon_step": 2,
+      "val_mae": 0.1948560143509153,
+      "val_rmse": 0.262224955707295,
+      "best_iteration": 369
+    },
+    {
+      "horizon_step": 3,
+      "val_mae": 0.19328041145652003,
+      "val_rmse": 0.2771199430888482,
+      "best_iteration": 355
+    },
+    {
+      "horizon_step": 4,
+      "val_mae": 0.18816074219698914,
+      "val_rmse": 0.25371384518220935,
+      "best_iteration": 348
+    },
+    {
+      "horizon_step": 5,
+      "val_mae": 0.18942977162652197,
+      "val_rmse": 0.25953052396246684,
+      "best_iteration": 266
+    },
+    {
+      "horizon_step": 6,
+      "val_mae": 0.19736618551640503,
+      "val_rmse": 0.2672074926613619,
+      "best_iteration": 110
+    }
+  ],
+  "training_time_s": 6.4561238288879395,
+  "n_train": 3347,
+  "n_val": 837,
+  "n_features": 39
+}
