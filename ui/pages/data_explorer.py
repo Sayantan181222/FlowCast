@@ -26,62 +26,112 @@ def render_data_explorer():
     # Data Loading Section
     st.markdown(section_header("🔧 Data Loading", "Load and preprocess real NYC Taxi Trip Duration data"), unsafe_allow_html=True)
 
+    # ── Data source: file on disk OR upload ───────────────────────────
     real_data_exists = os.path.exists(DATA_CONFIG["real_train_file"])
-    processed_exists = os.path.exists(DATA_CONFIG["processed_data_file"])
+    uploaded_file = None
 
     if real_data_exists:
+
         st.markdown(f"""
         <div class="glass-card">
-            <h4 style="color: #16a34a;">✅ Real NYC Taxi Dataset Found</h4>
+            <h4 style="color: #16a34a;">✅ Dataset Found Locally</h4>
             <p style="color: #475569; font-size: 0.85rem;">
-                <strong>train.csv</strong>: ~1.46M trip records (Jan–Jun 2016)<br>
-                Path: <code>nyc-taxi-trip-duration/train.csv</code>
+                <strong>train.csv</strong> detected at
+                <code>nyc-taxi-trip-duration/train.csv</code><br>
+                ~1.46M trip records · Jan–Jun 2016
             </p>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.error("❌ Real data not found at `nyc-taxi-trip-duration/train.csv`")
-        return
+        st.markdown("""
+        <div class="glass-card" style="border: 2px dashed #6366f1;">
+            <h4 style="color: #4f46e5;">📂 Upload NYC Taxi Dataset</h4>
+            <p style="color: #475569; font-size: 0.85rem;">
+                <code>train.csv</code> not found locally.
+                Download it from
+                <a href="https://www.kaggle.com/competitions/nyc-taxi-trip-duration/data"
+                   target="_blank" style="color:#6366f1;">
+                   Kaggle NYC Taxi Trip Duration
+                </a>
+                and upload below.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
+        uploaded_file = st.file_uploader(
+            "Upload train.csv (from Kaggle NYC Taxi Trip Duration)",
+            type=["csv"],
+            help="The file should contain columns: id, pickup_datetime, dropoff_datetime, "
+                 "pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, "
+                 "passenger_count, trip_duration",
+            key="train_csv_upload",
+        )
+
+        if uploaded_file is None:
+            st.info("👆 Upload **train.csv** to continue. You can still use **Demand Forecasting** "
+                    "and **Route Optimizer** with the pre-loaded data.")
+            st.markdown("---")
+            # Show demand summary even without upload
+            demand_file = DATA_CONFIG.get("demand_data_file", "data/demand_aggregated.csv")
+            if os.path.exists(demand_file):
+                st.markdown(section_header("📊 Pre-loaded Demand Summary",
+                                           "Aggregated hourly demand is available for forecasting"),
+                            unsafe_allow_html=True)
+                demand_df = pd.read_csv(demand_file)
+                render_metric_row([
+                    ("📅", f"{len(demand_df):,}", "Hourly Steps"),
+                    ("📈", f"{demand_df['demand'].mean():.0f}", "Avg Hourly Demand"),
+                    ("🔝", f"{demand_df['demand'].max():.0f}", "Peak Demand"),
+                    ("📉", f"{demand_df['demand'].min():.0f}", "Min Demand"),
+                    ("📏", f"{demand_df['demand'].std():.0f}", "Std Dev"),
+                ])
+            return
+
+    # ── Record count slider  ───────────────────────────────────────────
     col1, col2 = st.columns(2)
     with col1:
         sample_size = st.select_slider(
             "Records to Load (use full data for training)",
             options=[50000, 100000, 250000, 500000, 1000000, 1458644],
-            value=1458644,
+            value=250000 if uploaded_file else 1458644,
             format_func=lambda x: f"{x:,}" if x < 1458644 else "All (~1.46M)",
         )
-
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
         load_btn = st.button("📦 Load & Preprocess Data", use_container_width=True)
 
     if load_btn:
-        with st.spinner(f"Loading {sample_size:,} records and preprocessing..."):
-            from module1_data.data_preprocessor import DataPreprocessor
+        from module1_data.data_preprocessor import DataPreprocessor
 
-            progress = st.progress(0)
-            status = st.empty()
+        progress = st.progress(0)
+        status = st.empty()
 
-            # Load real data
-            status.text("📦 Loading real NYC Taxi data...")
-            progress.progress(5)
+        status.text("📦 Reading CSV...")
+        progress.progress(5)
 
-            nrows = sample_size if sample_size < 1458644 else None
-            df = pd.read_csv(DATA_CONFIG["real_train_file"], nrows=nrows)
+        try:
+            if uploaded_file is not None:
+                # Read from upload (in-memory)
+                nrows = sample_size if sample_size < 1458644 else None
+                df_raw = pd.read_csv(uploaded_file, nrows=nrows)
+                # Save to disk so other modules can access it
+                os.makedirs("nyc-taxi-trip-duration", exist_ok=True)
+                df_raw.to_csv(DATA_CONFIG["real_train_file"], index=False)
+                st.info(f"💾 Saved {len(df_raw):,} rows to `nyc-taxi-trip-duration/train.csv`")
+            else:
+                nrows = sample_size if sample_size < 1458644 else None
+                df_raw = pd.read_csv(DATA_CONFIG["real_train_file"], nrows=nrows)
+
             progress.progress(20)
+            status.text(f"⚙️ Preprocessing {len(df_raw):,} records...")
 
-            status.text(f"⚙️ Preprocessing {len(df):,} records...")
             preprocessor = DataPreprocessor()
-            results = preprocessor.run_pipeline(df, save=True, verbose=True)
+            results = preprocessor.run_pipeline(df_raw, save=True, verbose=True)
             progress.progress(90)
 
-            # Save raw (processed with zones) for other modules
             results["processed_trips"].to_csv(DATA_CONFIG["raw_data_file"], index=False)
-
             st.session_state["raw_data"] = results["processed_trips"]
             st.session_state["preprocessed"] = results
-            # Clear cached graph so it rebuilds with new data
             if "transport_graph" in st.session_state:
                 del st.session_state["transport_graph"]
 
@@ -89,16 +139,21 @@ def render_data_explorer():
             status.text("✅ Done!")
             st.success(f"✅ Loaded and preprocessed {len(results['processed_trips']):,} records!")
 
+        except Exception as e:
+            st.error(f"❌ Error during preprocessing: {e}")
+            return
+
     st.markdown("---")
 
-    # Load existing data for display
+    # ── Display section ───────────────────────────────────────────────
     df = None
     if "raw_data" in st.session_state:
         df = st.session_state["raw_data"]
     elif os.path.exists(DATA_CONFIG["raw_data_file"]):
-        df = pd.read_csv(DATA_CONFIG["raw_data_file"], nrows=200000)  # Load subset for display
+        df = pd.read_csv(DATA_CONFIG["raw_data_file"], nrows=200000)
         df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
         st.session_state["raw_data"] = df
+
 
     if df is not None:
         # Overview Metrics
