@@ -59,11 +59,10 @@ def render_data_explorer():
         """, unsafe_allow_html=True)
 
         uploaded_file = st.file_uploader(
-            "Upload train.csv (from Kaggle NYC Taxi Trip Duration)",
-            type=["csv"],
-            help="The file should contain columns: id, pickup_datetime, dropoff_datetime, "
-                 "pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, "
-                 "passenger_count, trip_duration",
+            "Upload train.csv or train.csv.gz (Kaggle NYC Taxi Trip Duration)",
+            type=["csv", "gz"],
+            help="train.csv is ~200MB. To upload faster, compress it: gzip train.csv → train.csv.gz (~50MB). "
+                 "Pandas reads both formats automatically.",
             key="train_csv_upload",
         )
 
@@ -111,13 +110,20 @@ def render_data_explorer():
 
         try:
             if uploaded_file is not None:
-                # Read from upload (in-memory)
+                # Auto-detect gzip vs plain CSV
                 nrows = sample_size if sample_size < 1458644 else None
-                df_raw = pd.read_csv(uploaded_file, nrows=nrows)
+                is_gz = uploaded_file.name.endswith(".gz")
+                status.text(f"📦 Reading {'compressed' if is_gz else ''} CSV...")
+                df_raw = pd.read_csv(
+                    uploaded_file,
+                    nrows=nrows,
+                    compression="gzip" if is_gz else None,
+                )
                 # Save to disk so other modules can access it
                 os.makedirs("nyc-taxi-trip-duration", exist_ok=True)
                 df_raw.to_csv(DATA_CONFIG["real_train_file"], index=False)
                 st.info(f"💾 Saved {len(df_raw):,} rows to `nyc-taxi-trip-duration/train.csv`")
+
             else:
                 nrows = sample_size if sample_size < 1458644 else None
                 df_raw = pd.read_csv(DATA_CONFIG["real_train_file"], nrows=nrows)
