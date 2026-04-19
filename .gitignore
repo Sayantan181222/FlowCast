@@ -1,36 +1,34 @@
-# ── Large data files (too big for GitHub) ─────────────────────
+# ── Large raw data files (too big for GitHub — download from Kaggle) ──
 nyc-taxi-trip-duration/
 data/nyc_taxi_raw.csv
+data/nyc_taxi_processed.csv
 
-# ── Model checkpoints (binary, large) ─────────────────────────
-models/lgbm_demand_model.pkl
-models/trip_duration_model.pkl
-models/trip_duration_scaler.pkl
-
-# ── Python cache ───────────────────────────────────────────────
+# ── Python cache ───────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 .Python
 
-# ── Virtual environments ───────────────────────────────────────
+# ── Virtual environments ───────────────────────────────────────────────
 venv/
 .venv/
 env/
 
-# ── OS / Editor ────────────────────────────────────────────────
+# ── OS / Editor ────────────────────────────────────────────────────────
 .DS_Store
 *.swp
 *.swo
 .idea/
 .vscode/
 
-# ── Jupyter ────────────────────────────────────────────────────
+# ── Jupyter ────────────────────────────────────────────────────────────
 .ipynb_checkpoints/
 *.ipynb
 
-# ── Logs / temp ────────────────────────────────────────────────
+# ── Logs / temp ────────────────────────────────────────────────────────
 *.log
 tmp/
-data/nyc_taxi_processed.csv
+
+# NOTE: models/ and data/demand_aggregated.csv are intentionally included
+# so Streamlit Cloud can run the app without needing large data re-downloads.
